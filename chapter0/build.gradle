@@ -1,3 +1,10 @@
+// build.gradle 설정 후 ->
+// http://localhost:8080 접속
+// resources.static.index.html설정
+// 서버 재실행
+// http://localhost:8080 접속
+// postman 설치
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.0'   // 스프링부트 플러그인
