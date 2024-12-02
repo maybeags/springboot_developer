@@ -100,6 +100,37 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
             어떤 기술을 사용하든 일관된 방식으로 데이터베이스에 접근하도록 인터페이스를 지원
             WAS 역시 PSA의 예시 중 하나로, 어떤 서버를 사용하더라도(톰캣, 언더토우, 네티 등)
             코드를 동일하게 가져갈 수 있음.
+
+    3. 스프링 부트 3 둘러보기
+        첫 번째 스프링 부트 3 예제 만들기
+            01 단계 - springbootdeveloper 패키지 -> TestController 에 코드 작성
+                코드 변경 사항이 있을 때는 스프링 부트 서버를 다시 시작하고
+                http://localhost:8080/test로 접속하면 Hello, world! 출력됨
+                웹 브라우저, 즉, 클라이언트에서 보낸 /test 라는 GET 요청을 보면 됨.
+                http://localhost:8080/test
+                    localhost : 현재사용중인 컴퓨터 127.0.0.1
+                    8080 : 포트 번호
+                    test : 경로
+                /test는 @GetMapping이라는 애너테이션으로 메서드와 매핑할 때 스프링 부트에서 설정한 경로
+                이처럼 웹 브라우저에서 요청할 주소에 맞게 코드를 작성하면 웹 사이트나, 웹 애플리케이션을 개발할 수 있음.
+                해당 개발 패턴을 기억해둘 것!
+
+        스프링 부트 스타터  살펴보기
+            스프링 부프 스타터란? : 의존성이 모여 있는 그룹
+                스타터를 사용하면 필요한 기능을 간편하게 설정할 수 있음.
+                스타터의 명명 규칙
+                    spring-boot-starter-{작업유형}
+                    ex) JDBC 관련 스타터
+                        spring-boot-starter-jdbc
+
+                자주 사용하는 스타터 예시
+                1)spring-boot-starter-web           : Spring MVC를 사용, RESTful 웹 서비스를 개발할 때 필요한 의존성 모음
+                2)spring-boot-starter-test          : 스프링 애플리케이션을 테스트하기 위해 필요한 의존성 모음
+                3)spring-boot-starter-validation    : 유효성 검사를 위해 필요한 의존성 모음
+                4)spring-boot-starter-actuator      : 모니터링을 위해 애플리케이션에서 제공하는 다양한 정보를 제공하기 쉽게 하는 의존성 모음
+                5)spring-boot-starter-jpa           : ORM을 사용하기 위한 인터페이스의 모음인 JPA를 더 쉽게 사용하기 위한 의존성 모음
+
+                실제로 사용해봐야 알기 때문에 다음 시간부터 알아보도록 하겠습니다!!:)
  */
 @SpringBootApplication
 public class SpringBootDeveloperApplication {
