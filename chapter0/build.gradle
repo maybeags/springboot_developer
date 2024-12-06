@@ -1,0 +1,29 @@
+// build.gradle 설정 후 ->
+// http://localhost:8080 접속
+// resources.static.index.html설정
+// 서버 재실행
+// http://localhost:8080 접속
+// postman 설치
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'   // 스프링부트 플러그인
+    id 'io.spring.dependency-management' version '1.1.0'    // 스프링의 의존성을 자동으로 관리
+}
+
+group = 'me.ahngeunsu'  // 지정한 그룹 id
+version = '1.0'
+sourceCompatibility = '17'  // 자바 소스를 컴파일할 때 사용할 자바 버전
+
+repositories {  // 기본값
+    mavenCentral()
+}
+
+dependencies {  // 필요한 기능의 의존성 입력 -> 기본값 아님
+    implementation 'org.springframework.boot:spring-boot-starter-web'   // 웹 관련
+    implementation 'org.springframework.boot:spring-boot-starter-test'  // 테스트 기능
+}
+
+test {  // 기본값
+    useJUnitPlatform()
+}
