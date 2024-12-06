@@ -2,111 +2,112 @@ package me.ahngeunsu.springbootdeveloper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-
 /*
-    1. 스프링 부트 3 구조 살펴보기
-        각 계층이 양 옆의 계층과 통신하는 구조
-        계층 : 각자의 역할과 책임이 있는 어떤 소프트웨어의 구성 요소 -> 각 계층은 소통할 수는 있지만 다른 계층에 직접 간섭하거나 영향을 미치진 않음
+    1. 테스트 코드 개념 익히기
+        테스트 코드는 작성한 코드가 의도대로 잘 동작하고 예상치 못한 문제가 없는지 확인할 목적으로 작성하는 코드
+        보통 테스트 코드 관련 공부는 본 개발 공부를 하느라 미루는 경우가 많으나 많은 장점을 가지고 있음
 
-        카페와 빵집으로 이해하는 계층
-        카페는 커피를, 빵집은 빵을 팔게 될텐데, 피룡한 경우 협업 관계를 맺어 어떤 손님이 커피를 사면 빵을 할인해 줄 수 있음 -> 계층 간 소통
+        장점 :
+            1) 유지 보수에 편리함
+            2) 코드 수정 시 기존 기능이 제대로 작동하지 않을까봐 걱정할 필요성이 없음
 
-        스프링 부트에서의 계층
-        1) 프레젠테이션(presentation)
-            HTTP 요청을 받고 이 요청을 비지니스 계층으로 전송하는 역할 -> Controller가 프레젠테이션 계층 역할
-                TestController 클래스와 같은 것을 의미하며 스프링 부트 내에 여러 개가 있을 수 있음.
+        테스트 코드란?
+            테스트 코드는 test 디렉토리에서 작업함. -> 프로젝트 생성시 src의 하위 폴더, main과 같은 라인에 test 폴더가 있음.
+            테스트 코드에는 다양한 패턴이 있으나 여기서 소개할 패턴은 given-when-then 패턴
+                1) given : 테스트 실행을 준비하는 단계
+                2) when : 테스트를 진행하는 단계
+                3) then : 테스트 결과를 검증하는 단계
 
-        2) 비지니스(business)
-            모든 비지니스 로직을 처리.
-            비지니스 로직 : 서비스를 만들기 위한 로직을 의미하며, 웹 사이트에서 벌어지는 모든 작업 -> 주문 서비스라고 한다면 주문 개수, 가격 등의
-            데이터를 처리하기 위한 로직, 추문 처리를 하다가 발생하는 예외 처리 로직, 주문을받거나 취소하는 것 같이 프로세스를 구현하기 위한 로직 등을 의미
-            서비스가 비지니스 계층의 역할을 함.
+            예를 들어 새로운 메뉴를 저장하는 코드를 테스트한다고 가정했을 때 테스트 코드를 given, when, then으로 구분해 구현함
 
-        3) 퍼시스턴스(persistence)
-            모든 데이터베이스 관련 로직을 처리. 이 과정에서 데이터베이스에 접근하는 DAO 객체를 사용할 수도 있음. DAO는 데이터베이스 계층과 상호작용하기
-            위한 객체라고 이해하면 편리함 -> 리포지터리가 퍼시스턴스 계층의 역할을 함.
+            예시
 
-        계층은 개념의 영역이고 Controller, Service, Repository는 실제 구현을 위한 영역 -> 수업 시에 적용 예정입니다.
+            @DisplayName("새로운 메뉴를 저장한다.")
+            @Test
+            public void saveMenuTest() {
+                // 1. given : 메뉴를 저장하기 위한 준비 과정
+                final String name = "아메리카노";
+                final int price = 2000;
+                final Menu americano = new Menu(name, price);
 
-        스프링 부트 프로젝트 디렉터리 구성하며 살펴보기
-            : 스프링 부트에는 정해진 구조가 없지만 추천 프로젝트 구조가 있고, 이를 많은 개발자가 따르므로 수업 시에도 해당 구조를 따라 개발할 예정
+                // 2. when : 실제로 메뉴를 저장
+                final long savedId = MenuService.save(americano);
 
-            main : 실제 코드를 작성하는 공간. 프로젝트 실행에 필요한 소스 코드나 리소스 파일은 모두 이 폴더 안에 들어 있음.
+                // 3. then : 메뉴가 잘 추가되었는지 검증
+                final Menu savedMenu = menuService.findById(savedId).get();
+                assertThat(savedMenu.getName()).isEqualTo(name);
+                assertThat(SavedMenu.getPrice()).isEqualTo(price);
+            }
 
-            test : 프로젝트의 소스 코드를 테스트할 목적의 코드나 리소스 파일이 들어 있음.
+        이상의 코드를 확인하면 세 부분으로 나뉘어져 있음. 메뉴를 저장하기 위해 준비하는 과정인 given절,
+        실제로 메뉴를 저장하는 when절
+        메뉴가 잘 추가되었는지 확인하는 then절로 나뉘어져 있음을 확인할 수 있음.
 
-            build.gradle : 빌드를 설정하는 파일. 의존성이나 플러그인 설정과 같이 빌드에 필요한 설정을 할 때 사용
+    2. 스프링 부트 3와 테스트
+        스프링 부트는 애플리케이션을 테스트하기 위한 도구와 애너테이션을 제공함.
+        spring-boot-starter-test 스타터에 테스트를 위한 도구가 모여있음
 
-            settings.gradle : 빌드할 프로젝트의 정보를 설정하는 파일.
+        스프링 부트 스타터 테스트 목록
 
-                main 디렉토리 구성하기
-                    : main 디렉토리 내에 java와 resources로 구성되어 있음. 여기에 아직 추가하지 못했던 스프링 부트 프로젝트의 구성 요소 추가 예정
-                        01 단계 - HTML과 같은 뷰 관련 파일을 넣을 template 디렉토리를 생성 resource 우클릭 -> new directory -> templates
-                        02 단계 - static 디렉토리는 JS, CSS, 이미지와 같은 정적 파일을 넣는 용도로 사용함. -> 이미 만들었으므로 생략
-                        03 단계 - 스프링 부트 설정을 할 수 있는 application.yml 파일을 생성 -> 해당 파일은 스프링 부트 서버가 실행되면
-                            자동으로 로딩되는 파일. 데이터베이스의 설정 정보, 로깅 설정 정보 등이 들어갈 수도 있고, 직접 정의할 때 사용하기도 함.
-                            앞으로 프로젝트를 진행하며 자주 사용할 파일이므로 잊지 말고 만들 것 -> 또한 github에 올리면 안됨.
+            1) JUnit : 자바 프로그래밍 언어용 단위 테스트 프레임워크
+            2) Spring Test & Spring Boot Test : 스프링 부트 애플리케이션을 위한 통합 테스트 지원
+            3) AssertJ : 검증문인 어써션을 작성하는 데 사용되는 라이브러리
+            4) Hamcrest : 표현식을 이해하기 쉽게 만드는 데 사용되는 Matcher 라이브러리
+            5) Mockito : 테스트에 사용할 각짜 객체인 목 객체를 쉽게 만들고, 관리하고, 검증할 수 있게 지원하는 테스트 프레임 워크
+            6) JSONassert : JSON 어써션 라이브러리
+            7) JsonPath : JSON 데이터에서 특정 데이터를 선택하고 검색하기 위한 라이브러리
 
-    2. 스프링 부트 3 프로젝트 발전시키기
+        이 중, JUnit과 AssertJ를 가장 많이 사용함.
 
-        각 계층의 코드를 추가할 예정 -> 이를 통해 계층이 무엇이고 스프링 부트에서는 계층을 어떻게 나누는지 감을 잡아나가기를 바람.
-            여기서는 의존성을 추가한 다음 -> 프레젠테이션 계층, 비지니스 계층, 퍼시스턴스 계층 순서대로 코드를 추가할 예정
+            JUnit이란?
+                자바 언어를 위한 *단위 테스트 프레임워크.
+                    * 단위 테스트 : 작성한 코드가 의도대로 작동하는지 작은 단위로 검증하는 것을 의미
+                        보통 단위는 메서드 기준
+                JUnit을 이용하면 단위 테스트를 작성하고 테스트하는 데 도움을 줌. 테스트 결과가 직관적
 
-            build.gradle에 의존성 추가하기
-                01 단계 - 스프링 부트용 JPA인 스프링 데이터 JPA, 로컬 환경과 테스트 환경에서 사용할 인메모리 데이터베이스인 H2, 반복 메서드 작성
-                    작업을 줄여주는 라이브러리인 롬복을 추가할 예정 -> build.gradle 들어가서 추가할 것 -> 추가한 것들이 정확하게 뭔지 몰라도
-                        아직은 괜찮음. 현재 수준에서는 데이터베이스의 테이블을 객체로 바꿔서 가져오게 하는 도구들이라고 생각해주면 됨.
+                특징 :
+                    1) 테스트 방식을 구분할 수 있는 애너테이션을 제공
+                    2) @Test 애너테이션으로 메서드를 호출할 때마다 새 인스턴스를 생성, 독립 테스트도 가능
+                    3) 예상 결과를 검증하는 assertion 메서드 제공
+                    4) 사용 방법이 단순, 테스트 코드 작성 시간이 적음
+                    5) 자동 실행, 자체 결과를 확인하고 즉각적인 피드백을 제공
 
-                        implementation : 프로젝트 코드가 컴파일 시점과 런타임에 모두 해당 라이브러리를 필요로 할 때 사용
-                        testImplementation : 프로젝트의 테스트 모드를 컴파일하고 실해앟ㄹ 때만 필요한 의존성을 설정, 테스트 코드에서만 사용,
-                            메인 애플리케이션 코드에서는 사용하지 않음
-                        runtimeOnly : 런타임에만 필요한 의존성을 지정, 컴파일 시에는 필요하지 않지만, 애플리케이션을 실행할 때 필요한 라이브러리
-                            설정
-                        compileOnly : 컴파일 시에만 필요, 런타임에는 포함되지 않아야 하는 의존성 지정
-                        annotationProcessor : 컴파일 시에 애너테이션을 처리할 때 사용하는 도구의 의존성 지정
+                    JUnit으로 단위 테스트 코드 만들기
+                        01 단계 - JUnitTest 파일 생성. src-test-java 폴더에 JUnitTest.java 파일 생성하고 코드 작성할 것
+                        02 단계 = 실제로 테스트 코드가 잘 동작하는지 확인 -> JUnit 파일을 우클릭하여 테스트를 실행
+                        성공 여부, 테스틐 케이스의 이름, 테스트 실행 시간 정보를 확인하기 위해서는 v 모양인 show passed 버튼 클릭 필요
+                            * 한글이 깨지는 경우 Settings - Build, Execution, Deployment - Build Tools - Gradle에서
+                            Build and run suing과 Run tests using을 Gradle에서 IDEA로 바꿀 필요 있음
+                        03 단계 - 테스트를 실패했을 때의 예시 -> JUnitTest.java로 가서 코드 작성함.
+                        04 단계 - JUnitCycleTest.java 파일 생성 및 코드 입력
+                        05 단계 - 테스트 코드 실행해서 출력 결과 확인
 
-                02 단계 - gralde 새로고침 누르고 의존성 다운로드
+                    AssertJ로 검증문 가독성 높이기
 
-            프레젠테이션, 서비스, 퍼시스턴스 계층 만들기
+                        AssertJ는 JUnit과 함께 사용해 검증문의 가독성을 높여주는 라이브러리
+                        예를 들어 이전에 학습한
+                        Assertion.assertEquals(sum, a + b);를 떠올려보면 기대값과 비교값이 잘 구분되지 않음.
 
-                01 단계 - 프레젠테이션 계층에 속하는 컨트롤러 관련 코드를 작성 -> TestController 이용 예정
+                        AssertJ를 사용한 예시
+                        assertThat(a + b).isEqualTo(sum);
+                        이 경우 a와 b를 더한 값이 sum과 같아야 한다는 의미로 읽힘 -> 영어의 경우
 
-                02 단계 - 비지니스 계층 코드 -> TestController와 같은 위치에 TestService 파일 생성
+                        자주 사용하는 메서드 목록
 
-                03 단계 - 퍼시스턴스 계층 코드 작성 -> 같은 위치에 Member DAO 생성, 실제 DB에 접근하는 코드를 작성.
+                        1) isEqualTo(A) : A와 같은지 검증
+                        2) isNotEqualTo(A) : A와 다른지 검증
+                        3) contains(A) : A를 포함하는지 검증
+                        4) doesnotContain(A) : A를 포함하지 않는지 검증
+                        5) startsWith(A) : 접두사가 A인지 검증
+                        6) endsWith(A) : 접미사가 A인지 검증
+                        7) isEmpty() : 비어있는 값인지 검증
+                        8) isNotEmpty() : 비어 있지 않은 값인지 검증
+                        9) isPositive() : 양수인지 검증
+                        10) isNegative() : 음수인지 검증
+                        11) isGreaterThan(1) : 1보다 큰 값인지 검증
+                        12) isLessThan(1) : 1보다 작은 값인지 검증
 
-                04 단계 - 매핑 작업에는 '인터페이스' 파일이 필요. MemberRepository 인터페이스 파일을 새로 생성
-
-            작동 확인하기
-
-                데이트베이스에 결과물을 볼 수 있는 데이터가 하나도 입력되지 않은 상태.
-                보통은 이런 실행 테스트를 하기 위해 애플리케이션을 실행할 때마다 SQL 문을 데이터베이스에 직접 넣는데,
-                현재는 인메모리 데이터베이스를 사용하고 있기 때문에 새로 실행할 때마다 데이터가 사라져 매우 불편한 상태.
-                -> 이를 해결하기 위해 애플리케이션을 실행할 때마다 원하는 데이터를 자동으로 넣는 작업
-
-                01 단계 - sql 파일 생성. resources 디렉토리에 data.sql 파일을 생성
-
-                02 단계 - 기존에 만들어놓은 application.yml 파일을 열어 코드 변경.
-                    show-sql, format_sql 옵션은 애플리케이션 실행 과정에 데이터베이스에 쿼리할 일이 있으면 실행 구문을 모두 보여주는 옵션,
-                    defer-datasource-initialization 옵션은 애플리케이션을 실행할 때 테이블을 생성하고 data.sql 파일에 있는 쿼리를
-                    실행하도록 하는 옵션. -> 수정 후에 SpringBootApplication 파일 탭을 누른 다음 재실행 해야 합니다.
-
-                03 단계 - 서버 실행 후 콘솔창에서 ctrl + f 누르고 CREATE TABLE을 검색해 테이블이 잘 만들어졌는지 확인합니다.
-
-                04 단계 - 포스트맨으로 HTTP 요청을 시도합니다. 포스트맨을 실행 -> HTTP 메세더를 GET, http://localhost:8080/test을 입력하세요.
-                    그런 다음 Send 버튼을 눌러 스프링 부트 서버에 HTTP 요청을 전송하세요. 그러면 좀 전에 data.sql 파일로 작성해 저장한 데이터를 포스트맨,
-                    즉, 클라이언트에서 확인할 수 있습니다.
-
-                    데이터를 포스트맨에서 보기 까지의 과정
-
-HTTP 요청 ---->   TestController.java <----> TestService.java <----> MemberRepository.java <----> Database
-url:/test --->   프레젠테이션 계층       <----> 비지니스 계층        <----> 퍼시스턴스 계층           <----> 데이터베이스
-
-
-
-
-
+                    테스트 코드 작성 연습 문제 풀어보기 -> JUnitQuiz 파일을 test/java 폴더에 추가
  */
 @SpringBootApplication
 public class SpringBootDeveloperApplication {
