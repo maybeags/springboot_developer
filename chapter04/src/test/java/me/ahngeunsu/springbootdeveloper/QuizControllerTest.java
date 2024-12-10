@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -85,4 +87,47 @@ class QuizControllerTest {
         result.andExpect(status().isBadRequest()).andExpect(content().string("Bad Request!"));
     }
     // 이거 다음은 postquiz
+
+    /*
+        문제 02 POST 요청을 보내 응답 코드마다 예상하는 응답을 반환하는지 검증하는 테스트를 작성하세요.
+     */
+    @DisplayName("quiz(): POST /quiz?code=1 이면 응답 코드는 403, 응답 본문은 Forbidden!를 리턴한다.")
+    @Test
+    public void postQuiz1() throws Exception {
+        // 여기에 코드를 작성해주세요.
+
+        // 정답
+        // given
+        final String url = "/quiz";
+
+        // when
+        final ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Code(1)))
+        );
+
+        // then
+        result.andExpect(status().isForbidden())
+                .andExpect(content().string("Forbidden!"));
+    }
+
+    @DisplayName("quiz(): POST /quiz?code=13 이면 응답 코드는 200, 응답 본문은 OK!를 리턴한다.")
+    @Test
+    public void postQuiz13() throws Exception {
+        // 여기에 코드를 작성해주세요.
+
+        // 정답
+        // given
+        final String url = "/quiz";
+
+        // when
+        final ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Code(13)))
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(content().string("OK!"));
+    }
 }
