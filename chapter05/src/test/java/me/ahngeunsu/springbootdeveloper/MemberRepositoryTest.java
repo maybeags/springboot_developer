@@ -68,6 +68,88 @@ class MemberRepositoryTest {
         id는 모든 테이블에서 기본키로 사용하므로 값이 없거나 하지 않음(not nullable). 하지만 name의 경우 nullable이기 때문에 JPA에서 기본으로
         name을 찾아주는 메서드를 지원하지 않음. 하지만 메서드 이름으로 쿼리를 작성하는 기능을 제공함.
 
-        01 단계 -
+        01 단계 - 예를 들어 name의 값이 'C'인 멤버를 찾아야 하는 경우 SQL
+            SLECT * FROM member WHERE name = 'C';
+
+            이런 쿼리를 동적 메서드로 만들 경우 -> MemberRepository.java로 이동 -> src/main임
      */
+
+    @Sql("/insert-members.sql")
+    @Test
+    void getMemberByName() {
+        // when
+        Member member = memberRepository.findByName("C").get();
+
+        // then
+        assertThat(member.getId()).isEqualTo(3);
+    }
+    /*
+        테스트 후 확인
+        해당 기능을 쿼리 메서드라고 함.
+        쿼리 메서드 : JPA가 정해준 메서드 이름 규칙을 따르면 쿼리문으로 작성하지 않아도 메서드처럼
+            사용이 가능함. 추후 수업 예정
+
+        현재까지의 수업 내용 예시는
+            전체 조회 -> findAll()
+            id로 조회 -> findById()
+            특정 컬럼으로 조회 -> 쿼리 메서드 규칙에 맞게 정의 후 사용(여기서는 name 컬럼)
+
+        추가, 삭제 메서드 사용해보기
+            예를 들어 새로운 1번 멤버 'A'를 추가하려면 다음과 같은 쿼리문이 필요함
+            INSERT INTO member (id, name) VALUES (1, 'A');
+
+            JPA에서는 이 쿼리를 직접 입력하는 대신 save()라는 메서드를 사용함.
+
+                01 단계 - MemberRepositoryTest.java 파일에 작성
+     */
+    @Test
+    void saveMember() {
+        // given
+        Member member = new Member(1L, "A");
+
+        // when
+        memberRepository.save(member);
+
+        //then
+        assertThat(memberRepository.findById(1L).get().getName()).isEqualTo("A");
+    }
+
+    /*
+            02 단계 - 만약 엔티티를 한꺼번에 젖아하고 싶다면 saveAll() 메서드를 사용할 수 있음.
+                다음 코드도 작성하고 실행 예정.
+                추가할 멤버 객체들을 리스트로 만들고 saveAll() 메서드로 한꺼번에 추가한 후,
+                추가한 멤버 객체 수만큼 데이터에 들어있는지 확인하는 테스트.
+     */
+    @Test
+    void saveMembers() {
+        // given
+        List<Member> members = List.of(new Member(2L, "B"),
+                new Member(3L, "C"));
+
+        // when
+        memberRepository.saveAll(members);
+
+        // then
+        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+    }
+
+    /*
+        03 단계 - 멤버 삭제 // 쿼리문의 경우 DELELTE문을 사용함. 예를 들어 member 테이블에 있는
+            id가 2인 멤버를 삭제할 때는
+            DELETE FROM member WHERE id = 2;
+
+            JPA에서는 deleteById()를 사용하면 아이디로 레코드를 삭제할 수 있음. 여기서는 미리
+            스크립트로 작성한 insert-members.sql을 실행하여 3명의 멤버를 추가하고 deleteById()
+            메서드를 사용해 2번 멤버를 삭제한 뒤 2번 아이디를 가진 레코드가 있는지 조회할 예정.
+            삭제된 데이터이므로 isEmpty() 결과값이 true인지 확인 해야 함.
+     */
+    @Sql("/insert-members.sql")
+    @Test
+    void deleteMemberById() {
+        // when
+        memberRepository.deleteById(2L);
+
+        // then
+        assertThat(memberRepository.findById(2L).isEmpty()).isTrue();
+    }
 }
