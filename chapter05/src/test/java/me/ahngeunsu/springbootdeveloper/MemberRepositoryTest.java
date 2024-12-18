@@ -1,5 +1,6 @@
 package me.ahngeunsu.springbootdeveloper;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -152,4 +153,94 @@ class MemberRepositoryTest {
         // then
         assertThat(memberRepository.findById(2L).isEmpty()).isTrue();
     }
+
+    /*
+        04 단계 - 만약 실제 값이 그런지 눈으로 확인하기 위해서는 디버깅 모드를 사용해야 합니다.
+            1) 검증문에 브레이크 포인트를 잡고, deleteMemberById() 메서드를 디버그 모드로 실행
+            2) 디버그 창의 구문 실행 바를 이용해 memberRepository.findAll()을 입력하고 enter를
+                누르면 result 라는 결과가 나타납니다.
+            3) result를 펼쳐서 결과를 확인해보면 B를 제외한 A, C만 남은 것을 확인할 수 있습니다.
+
+        05 단계 - 만약 모든 데이터를 삭제하고 싶다면 deleteAll() 메서드를 이용할 수 있음.
+            해당 메서드를 쿼리로 변형하면
+            DELETE FROM member
+     */
+
+    @Sql("/insert-members.sql")
+    @Test
+    void deleteAll() {
+        // when
+        memberRepository.deleteAll();
+
+        // then
+        assertThat(memberRepository.findAll().size()).isZero();
+    }
+    /*
+        하지만 이 메서드는 정말 모든 데이터를 삭제하므로 실제 서비스 코드에서는 거의 사용하지 않음
+        사용 예시 -> 테스트 간의 결리를 보장하기 위해
+            즉, 한 테스트의 실행으로 데이터베이스가 변경되었을 때 다른 테스트가 그 데이터베이스를
+                사용할 때 영향을 주지 않도록 하기 위함.
+        06 단계 - 그래서 보통은 @AfterEach 애너테이션을 붙여 cleanUp() 메서드와 같은 형태로 사용함.
+     */
+
+    @AfterEach
+    public void cleanUp() {
+        memberRepository.deleteAll();
+    }
+    // 이상의 형태로 자주 사용함.
+
+    /*
+        레코드 추가 -> save()
+        한꺼번에 여러 레코드 추가 -> saveAll()
+        아이디로 레코드 삭제 -> deleteById()
+        모든 레코드 삭제 -> deleteAll()
+
+        수정 메서드 사용해보기
+            JPA로 데이터를 수정하는 방법
+            예를 들어 id가 2인 멤버의 이름을 "BC"로 바꾸려면 쿼리문으로는
+            UPDATE member
+            SET name = 'BC'
+            WHERE id = 2;
+
+            하지만 JPA에서 데이터를 수정할 때는 다른 방법을 사용함. 왜냐하면 JPA는 트랜잭션 내에서
+            데이터를 수정해야 하기 때문. 따라서 데이터를 수정할 때는 그냥 메서드만 사용해서는 안되고
+            '@Transactional' 애너테이션을 메서드에 추가해야 함. 해당 방법에 대해서 수업합니다.
+
+            01 단계 - Member.java 파일에 메서드를 추가할겁니다. 해당 메서드는 name의 필드 값을 바꾸는
+                단순한 메서드입니다.
+
+                changeName() 메서드를 추가한 후,
+
+                해당 메서드가 @Transactional 애너테이션이 포함된 메서드에서 호출되면
+                    JPA는 변경 감지(dirty checking) 기능을 통해 엔티티의 필드값이 변경될 때 그 변경 사항을
+                    데이터베이스에 자동으로 반영합니다. 만약 엔티티가 영속 상태일 때 필드값을 변경하고
+                    트랜잭션이 커밋되면 JPA는 변경사항을 데이터베이스에 자동으로 적용합니다.
+
+            02 단계 - 실행 확인 전에 MemberRepositoryTest.java에 해당 코드를 추가합니다.
+                  insert-members.sql 스크립트로 3명의 멤버를 추가하고 id가 2인 멤버를 찾아 이름을 "BC"로
+                  변경한 뒤에 다시 조회해 이름이 "BC"로 변경됐는지 확인하는 형태입니다.
+     */
+    @Sql("/insert-members.sql")
+    @Test
+    void update() {
+        // given
+        Member member = memberRepository.findById(2L).get();
+
+        // when
+        member.changeName("BC");
+
+        // then
+        assertThat(memberRepository.findById(2L).get().getName()).isEqualTo("BC");
+    }
+    /*
+        03 단계 - 그런데 해당 코드에는 아까 말한 @Transational 애너테이션이 없는데도 수정에 성공했음.
+        이유는 @DataJpaTest 애너테이션 때문.
+        @DataJpaTest - 테스트를 위한 설정을 제공하며, 자동으로 데이터베이스에 대한 트랜잭션 관리를 설정함.
+        클래스에 있는 @DataJpaTest 애너테이션에 마우스 올리면 커서가 뜨는데 거기에 @Transactional이 있음을 확인 가능함.
+        하지만 서비스 코드에서 업데이트 기능을 사용하려면 서비스 메서드에 반드시 @Transactional을 명시해야 하기 때문에
+        앞으로는 @Transactional을 쓸 예정.
+
+        5. 예제 코드 살펴 보기
+            01 단계 Member.java 확인
+     */
 }
