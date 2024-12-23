@@ -29,6 +29,18 @@ public class Article {
         this.content = content;
     }
 
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    /*
+        02 단계 - 그런 다음 블로그 글 수정 요청을 받을 DTO를 작성해야 합니다. dto 디렉토리에 UpdateArticleRequest.java
+            파일을 만들어 다음과 같이 작성하세요.
+
+            UpdateArticleRequest.java  파일을 생성합니다.
+     */
+
 //    protected Article() {}      // 기본 생성자
 
 //    // Getter 생성하세요

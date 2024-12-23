@@ -21,9 +21,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest // 테스트용 애플리케이션 컨텍스트
@@ -176,4 +175,75 @@ class BlogApiControllerTest {
                 01 단계 - BlogService.java 파일을 열어 블로그 글 하나를 조회하는 메서드인 findById() 메서드를 추가합니다.
                     이 메서드는 데이터베이스에 저장되어 있는 글의 ID를 이용해 글을 조회합니다.
      */
+
+    @DisplayName("findArticle : 블로그 글 조회에 성공한다.")
+    @Test
+    public void findArticle() throws Exception {
+        // given
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        final  ResultActions resultActions = mockMvc.perform(get(url, savedArticle.getId()));
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(content))
+                .andExpect(jsonPath("$.title").value(title));
+
+    }
+    /*
+        글 조회 API는 제목과 글 내용을 가져옵니다. 이 테스트 코드를 작성하고 돌리면 테스트가 잘 통과하는지를 확인하세요.
+
+        6. 블로그 글 삭제 API 구현하기
+            블로그 글 삭제 기능도 필요합니다. 이번에는 ID에 해당하는 블로그 글을 삭제하는 API를 구현합니다.
+
+            서비스 메서드 코드 작성하기
+                01 단계 - BlogService.java 파일을 열어 delete() 메서드를 추가. 이 메서드는 블로그 글의 ID를 받은 뒤
+                    JPA에서 제공하는 deleteById() 메서드를 이용해 데이터베이스에서 데이터를 삭제합니다.
+
+                    BlogService.java 파일로 이동하세요.
+     */
+
+    @DisplayName("deleteArticle : 블로그 글 삭제에 성공한다.")
+    @Test
+    public void deleteArticle() throws Exception {
+        // given
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        mockMvc.perform(delete(url, savedArticle.getId()))
+                .andExpect(status().isOk());
+
+        // then
+        List<Article> articles = blogRepository.findAll();
+
+        assertThat(articles).isEmpty();
+        /*
+            이후 메서드를 실행하면 됩니다.
+
+            7. 블로그 글 수정 API 구현하기
+                이제 글 수정 API를 구현합니다. 여기까지 하면 블로그의 핵심 기능은 모두 구현한겁니다! 조금만 더 힘을 내서 가봅시다!
+
+                서비스 메서드 코드 작성하기
+                    update() 메서드는 특정 아이디의 글을 수정합니다.
+
+                    01 단계 - 엔티티에 요청받은 내용으로 값을 수정하는 메서드를 작성합니다. Articles.java 파일을 열어 다음과 같이 작성해주세요.
+
+                        Articles.java 파일로 이동합니다.
+         */
+    }
 }

@@ -2,9 +2,11 @@ package me.ahngeunsu.springbootdeveloper.service;
 /*
     서비스 메서드 코드 작성하기 02 단계 중입니다.
  */
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.ahngeunsu.springbootdeveloper.domain.Article;
 import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
+import me.ahngeunsu.springbootdeveloper.dto.UpdateArticleRequest;
 import me.ahngeunsu.springbootdeveloper.repository.BlogRepository;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +63,45 @@ public class BlogService {
 
         컨트롤러 메서드 코드 작성하기
 
-            01 단계 -
+            01 단계 - api/articles/{id} GET 요청이 오며 블로그 글을 조회하기 위해 매핑할 findArticle() 메서드 작성.
+                BlogApiController.java 파일을 열어 코드를 작성합니다.
      */
 
+    public void delete(long id) {
+        blogRepository.deleteById(id);
+    }
+    /*
+        컨트롤러 메서드 코드 작성하기
+            01 단계 - /api/articles/{id} DELETE 요청이 오면 글을 삭제하기 위한 findArticles() 메서드를 작성합니다.
+
+            BlogApiController.java로 이동하세요.
+     */
+
+    @Transactional  // 트랜잭션 메서드
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        article.update(request.getTitle(), request.getContent());
+
+        return article;
+    }
+
+    /*
+        트랜잭션 - 데이터베이스에서 데이터를 바꾸기 위한 작업 단위를 말합니다.
+
+            예를 들어 계좌 이체를 할 때 이런 과정을 거친다고 가정합시다.
+                1) A 계좌에서 출금
+                2) B 계좌에 입금
+            그런데, 1)은 성공했는데 도중에 2)가 실패하면 어떻게 될까요? 고객 입장에서는 출금은 됐는데 입금이 안된 상황이 발생합니다.
+            이런 상황이 발생하지 않으려면 출금과 입금을 하나의 작업 단위로 묶어서, 즉 트랜잭션으로 묶어서 두 작업을 한 단위로 실행하면 됩니다.
+            만약 중간에 실패한다면 트랜잭션의 처음 상태로 모두 되돌리면 되는 것이죠.
+
+        컨트롤러 메서드 코드 작성하기
+
+            01 단계 - /api/articles/{id} PUT 요청이 오면 글을 수정하기 위한 updateArticle() 메서드를 작성하겠습니다.
+                BlogApiController.java 파일을 열어 수정해주세요.
+
+                BlogApiController.java 파일로 이동합니다.
+     */
 }

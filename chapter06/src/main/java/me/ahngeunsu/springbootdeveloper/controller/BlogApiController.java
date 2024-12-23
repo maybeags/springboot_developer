@@ -5,12 +5,10 @@ import me.ahngeunsu.springbootdeveloper.domain.Article;
 import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
 import me.ahngeunsu.springbootdeveloper.dto.ArticleResponse;
 import me.ahngeunsu.springbootdeveloper.service.BlogService;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -121,6 +119,59 @@ public class BlogApiController {
             테스트 코드 작성하기
                 01 단계 - 글 조회 테스트 역시 편의를 위해 테스트 코드 작성을 하겠습니다. 다음과 같은 given-when-then 패턴으로 코드를 작성하겠습니다.
                 코드는 BlogApiControllerTest.java에 이어 작성해주세요.
+     */
+
+    @GetMapping("/api/articles/{id}")
+    // URL 경로에서 값 추출
+    public ResponseEntity<ArticleResponse> findArticle(@PathVariable long id) { // URL에서 {id}에 해당하는 값이 id로 들어옴
+        Article article = blogService.findById(id);
+
+        return ResponseEntity.ok()
+                .body(new ArticleResponse(article));
+    }
+    /*
+        @PathVariable 애너테이션은 URL에서 값을 가져오는 애너테이션. 이 애너테이션이 붙은 메서드의 동작 원래는
+            /api/articles/3 GET 요청을 받으면 id에 3이 들어옵니다. 그리고 이 값은 앞서 만든 서비스 클래스의 findById()
+            메서드로 넘어가 3번 블로그 글을 찾습니다. 그 글을 찾으면 3번 글의 정보를 body에 담아 웹 브라우저로 전송합니다.
+
+        테스트 코드 작성하기
+
+            01 단계 - 테스트 코드를 작성해 글 조회가 잘 되는지 확인하겠습니다.
+                given - 블로그 글을 저장합니다.
+                when - 저장한 블로그 글의 id 값으로 API를 호출합니다.
+                then - 응답 코드가 200 OK이고, 반환 받은 content와 title이 저장된 값과 같은지 확인합니다.
+
+                BlogApiControllerTest.java 파일로 넘어가세요.
+     */
+
+    @DeleteMapping("/api/articles/{id}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable long id) {
+        blogService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+    /*
+        /api/articles/{id} DELETE 요청이 오면 {id}에 해당하는 값이 @PathVariable 애너테이션을 통해 들어옵니다.
+
+        실행 테스트 하기
+
+            01 단계 - 로직이 모두 완성되었으니 실제로 테스트하는 방법을 알아보겠습니다. 포스트맨에서 [DELETE]로 HTTP 메서드를 설정,
+                URL에는 http://localhost:8080/api/articles/1을 입력하세요. 후에 send를 누릅니다.
+
+            02 단계 - 그 이후에 앞서 만들어둔 블로그 글을 조회하는 API에 요청을 보내보겠습니다. 포스트맨에서 HTTP 메서드를 GET으로 설정,
+                http://localhost:8080/api/articles 요청을 보냅니다.
+
+                ID가 1인 글은 삭제되었다면, 2개의 글만 보일겁니다.
+
+        테스트 코드 작성하기
+
+            01 단계 - 이제 테스트 코드를 작성하며 삭제 API 구현을 마무리 합니다.
+            given - 블로그 글을 저장합니다.
+            when - 저장한 블로그 글의 id값으로 삭제 API를 호출합니다.
+            then - 응답 코드가 200 OK이고, 블로그 글 리스트를 전체 조회해 조회한 배열 크기가 0인지 확인합니다.
+
+            BlogApiControllerTest.java로 이동합니다.
      */
 
 
