@@ -3,12 +3,16 @@ package me.ahngeunsu.springbootdeveloper.controller;
 import lombok.RequiredArgsConstructor;
 import me.ahngeunsu.springbootdeveloper.domain.Article;
 import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
+import me.ahngeunsu.springbootdeveloper.dto.ArticleResponse;
 import me.ahngeunsu.springbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController // HTTP Reponse Body에 객체 데이터를 JSOM 형식으로 반환하는 컨트롤러
@@ -89,4 +93,35 @@ public class BlogApiController {
                 기본 값을 그대로 두고 테스트 코드 파일을 생성하세요.
 
      */
+
+    @GetMapping("/api/articles")
+    public ResponseEntity<List<ArticleResponse>> findAllArticles() {
+        List<ArticleResponse> articles = blogService.findAll()
+                .stream()
+                .map(ArticleResponse::new)
+                .toList();
+
+        return ResponseEntity.ok()
+                .body(articles);
+    }
+    /*
+        /api/articles GET 요청이 들어오면 글 전체를 조회하는 findAll() 메서드를 호출한 다음 응답용 객체인 ArticlesResponse로 파싱해 body에 담아
+        클라이언트에게 전송합니다. 이 코드에는 스트림을 적용하였습니다.
+
+        * 스트림 - 여러 데이터가 모여 있는 컬렉션을 간편하기 처리하기 위해서 자바 8에서 추가된 기능입니다.
+
+        실행 테스트 하기
+            01 단계 - 테스트를 쉽게 하기 위해 data.sql 파일을 생성합니다. resource 디렉토리에 data.sql 파일을 만드세요.
+
+            02 단계 - 포스트맨을 열고 HTTP 메서드는 GET으로, Params 탭으로 변경한 다음 URL은 http://localhost:8080/api/articles라고 입력해
+                send를 누르세요.
+
+                postman에 제이슨 형태로 출력되면 성공.
+
+            테스트 코드 작성하기
+                01 단계 - 글 조회 테스트 역시 편의를 위해 테스트 코드 작성을 하겠습니다. 다음과 같은 given-when-then 패턴으로 코드를 작성하겠습니다.
+                코드는 BlogApiControllerTest.java에 이어 작성해주세요.
+     */
+
+
 }

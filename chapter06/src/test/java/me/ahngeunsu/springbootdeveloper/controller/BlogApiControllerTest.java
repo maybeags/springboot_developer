@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest // 테스트용 애플리케이션 컨텍스트
 @AutoConfigureMockMvc   // MockMvc 생성 및 자동 구성
@@ -131,6 +133,47 @@ class BlogApiControllerTest {
 
         03 단계 - 테스트 코드를 실행해 코드가 잘 동작하는지 확인합니다.
 
+        4. 블로그 글 목록 조회를 위한 API 구현하기
+            클라이언트는 데이터베이스에 직접 접근할 수 없음. 그러니 이 역시도 API를 구현해볼 수 있도록 해야 함. 이제 블로그 글 조회를 위한
+            API를 구현. 모든 글을 조회하는 API, 글 내용을 조회하는 API를 순서대로 구현할 예정
 
+            서비스 메서드 코드 작성하기
+                01 단계 - BlogService.java 파일을 열어 데이터베이스에 저장되어 있는 글을 모두 가져오는 findAll() 메서드를 추가
+                    -> BlogService.java로 가세요.
+     */
+
+    @DisplayName("findAllArticles: 블로그 글 목록 조회에 성공한다.")
+    @Test
+    public void findAllArticles() throws Exception {
+        // given
+        final String url = "/api/articles";
+        final String title = "title";
+        final String content = "content";
+
+        blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(url)
+                .accept(MediaType.APPLICATION_JSON));
+
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value(content))
+                .andExpect(jsonPath("$[0].title").value(title));
+    }
+
+    /*
+        코드 작성을 완료했다면 테스트 코드를 실행해 코드가 잘 동작하는지 확인하세요.
+
+        5. 블로그 글 조회 API 구현하기
+            블로그 글 전체를 조회할 API를 구현했으니 이번에는 글 하나를 조회하는 API를 구현합니다.
+
+            서비스 메서드 코드 작성하기
+                01 단계 - BlogService.java 파일을 열어 블로그 글 하나를 조회하는 메서드인 findById() 메서드를 추가합니다.
+                    이 메서드는 데이터베이스에 저장되어 있는 글의 ID를 이용해 글을 조회합니다.
      */
 }

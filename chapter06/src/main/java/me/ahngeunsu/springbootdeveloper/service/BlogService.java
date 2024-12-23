@@ -8,6 +8,8 @@ import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
 import me.ahngeunsu.springbootdeveloper.repository.BlogRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor    // final이 붙거나 @NotNull이 붙은 필드의 생성자 추가
 @Service                    // 빈으로 등록
 public class BlogService {
@@ -35,4 +37,31 @@ public class BlogService {
             01 단계 - springbootdelveloper 패키지에 controller 패키지를 생성한 뒤, BlogApiController.java 파일 생성합니다.
 
      */
+    public List<Article> findAll() {
+        return blogRepository.findAll();
+    }
+
+    /*
+        JPA 지원 메서드인 findAll()을 호출해 article 테이블에 저장되어 있는 모든 데이터를 조회합니다. 이제 요청을 받아 서비스에 전달하는
+        컨트롤러를 만들겠습니다.
+
+        컨트롤러 메서드 코드 작성하기
+        /api/articles GET 요청이 오면 글 목록을 조회할 findAllArticles() 메서드를 작성할 예정. 이 메서드는 전체 글 목록을 조회하고 응답하는 역할
+
+            01 단계 - 응답을 위한 DTO를 먼저 작성함. dto 디렉토리에 ArticleResponse.java 파일을 생성.
+     */
+
+    public Article findById(long id) {
+        return blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+    }
+    /*
+        여기서 구현한 findById() 메서드는 JPA에서 제공하는 findById() 메서드를 사용해 ID를 받아 엔티티를 조회하고, 없으면
+        IllegalArguemntException 예외를 발생합니다.
+
+        컨트롤러 메서드 코드 작성하기
+
+            01 단계 -
+     */
+
 }
