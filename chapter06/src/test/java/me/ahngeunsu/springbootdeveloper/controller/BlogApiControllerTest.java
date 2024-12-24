@@ -3,6 +3,7 @@ package me.ahngeunsu.springbootdeveloper.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.ahngeunsu.springbootdeveloper.domain.Article;
 import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
+import me.ahngeunsu.springbootdeveloper.dto.UpdateArticleRequest;
 import me.ahngeunsu.springbootdeveloper.repository.BlogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -246,4 +247,49 @@ class BlogApiControllerTest {
                         Articles.java 파일로 이동합니다.
          */
     }
+
+    /*
+        Given - 블로그 글을 저장하고, 블로그 글 수정에 필요한 요청 객체를 만듭니다.
+        When - UPDATE API로 수정 요청을 보냅니다. 이때 요청 타입은 JSON이며, given 절에서 미리 만들어둔 객체를 요청 본문으로 함께 보냅니다.
+        Then - 응답 코드가 200 OK인지 확인합니다. 블로그 글 id로 조회한 후 값이 수정되었는지 확인합니다.
+     */
+
+    @DisplayName("updateArticle : 블로그 글 수정에 성공한다.")
+    @Test
+    public void updateArticle() throws Exception {
+        // given
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        final String newTitle = "new title";
+        final String newContent = "new content";
+
+        UpdateArticleRequest request = new UpdateArticleRequest(newTitle, newContent);
+
+        // when
+        ResultActions result = mockMvc.perform(put(url, savedArticle.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isOk());
+
+        Article article = blogRepository.findById(savedArticle.getId()).get();
+
+        assertThat(article.getTitle()).isEqualTo(newTitle);
+        assertThat(article.getContent()).isEqualTo(newContent);
+    }
+    /*
+        테스트 결과를 확인합니다.
+
+        이제 BlogApiController에 대한 테스트 코드를 모두 작성했습니다. 이 테스트 코드들은 추후에 BlogApiController가 변경되면 기존 코드가
+        모두 잘 작동한다는 사실을 보증합니다. 결국 개발자 입장에서는 코드를 추가할 때마다 기존에 작성해둔 코드에 영향은 가지 않을까에 대한 걱정을
+        하지 않을 수 있고, 기존 기능에 대해 직접 테스트하지 않아도 된다는 이점을 얻을 수 있습니다😁
+     */
 }

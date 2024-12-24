@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.ahngeunsu.springbootdeveloper.domain.Article;
 import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
 import me.ahngeunsu.springbootdeveloper.dto.ArticleResponse;
+import me.ahngeunsu.springbootdeveloper.dto.UpdateArticleRequest;
 import me.ahngeunsu.springbootdeveloper.service.BlogService;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -172,6 +173,35 @@ public class BlogApiController {
             then - 응답 코드가 200 OK이고, 블로그 글 리스트를 전체 조회해 조회한 배열 크기가 0인지 확인합니다.
 
             BlogApiControllerTest.java로 이동합니다.
+     */
+
+    @PutMapping("/api/articles/{id}")
+    public ResponseEntity<Article> updateArticle(@PathVariable long id, @RequestBody UpdateArticleRequest request) {
+        Article updateArticle = blogService.update(id, request);
+
+        return ResponseEntity.ok().body(updateArticle);
+    }
+    /*
+        /api/articles/{id} PUT 요청이 들어오면 Request Body 정보가 request로 넘어옵니다. 그리고 다시 서비스 클래스의 update() 메서드에
+        id와 request를 넘겨줍니다. 응답 값은 boyd에 담아 전송합니다.
+
+        실행 테스트하기
+
+            01 단계 - 포스트맨에서 HTTP 메서드는 PUT으로 설정, 그리고 URL은 http://localhost:8080/api/articles/1입니다.
+                수정 내용을 입력하려면 [Body]을 사용해야 합니다. 또, [raw], [JSON]으로 설정한 다음 수정할 내용을 JSON형태로
+                {
+                    "title":"어쩌고",
+                    "content":"저쩌고"
+                }
+                형식으로 입력합니다. 입력 한 후 [send] 눌러 요청을 날려보시면 됩니다.
+
+            02 단계 - 수정된 글은 글 전체 조회 API로 확인하면 됩니다. 전체 글을 조회해보면 ID가 1인 글이 수정되었음을 알 수 있습니다.
+                어떻게 확인한다? GET 요청으로 확인한다.
+
+        테스트 코드 작성하기
+
+            01 단계 - 여기서도 수정 테스트를 위한 코드를 작성하겠습니다. BlogApiControllerTest.java 파일에 코드를 추가합니다.
+
      */
 
 

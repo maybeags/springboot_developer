@@ -29,6 +29,8 @@ public class Article {
         this.content = content;
     }
 
+    // 여기를 추가했습니다.
+
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
