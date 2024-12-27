@@ -12,6 +12,15 @@
 </div>
 
 <div class="container">
+    <!-- 이거 생성 버튼 나중에 추가하는 겁니다. -->
+    <button type="button" id="create-btn"
+            th:onClick="|location.href='@{/new-article}'|"
+            class="btn btn-secondary btn-sm mb-3">글 등록</button>
+    <!-- 위에거 작성하고
+        실행 테스트하기
+            01 단계 - 스프링부트 서버를 다시 실행한 다음 http://localhost:8080/articles에 접속한 뒤
+                [글 등록] 버튼을 눌러 제대로 기능이 동작하는지 확인하세요. -->
+
     <div class="row-6" th:each="item : ${articles}">        <!-- 1. article 개수만큼 반복 -->
         <div class="card">
             <div class="card-header" th:text="${item.id}">  <!-- 2. item의 id 출력 -->
