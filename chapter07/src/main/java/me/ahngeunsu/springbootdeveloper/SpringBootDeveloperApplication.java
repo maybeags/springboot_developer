@@ -2,7 +2,9 @@ package me.ahngeunsu.springbootdeveloper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing  // created_at, updated_at 자동 업데이트 -> 이후 컨트롤러 메서드 작성하기 -> 01 단계 - 뷰에서 사용할 DTO를 만듭니다. ArticleViewResponse를 생성한 뒤 클래스를 구현합니다.
 @SpringBootApplication
 public class SpringBootDeveloperApplication {
     public static void main(String[] args) {

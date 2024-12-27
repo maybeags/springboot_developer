@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>블로그 글</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="p-5 mb-5 text-center</> bg-light">
+        <h1 class="mb-3">My Blog</h1>
+        <h4 class="mb-3">블로그에 오신 것을 환영합니다.</h4>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <article>
+                    <!-- 블로그 글 id 추가 (article.js 후에 작성할 것) -->
+                    <input type="hidden" id="article-id" th:value="${article.id}">
+                    <!-- 이거 위에거 말이야. 바로 작성하는 거 아님 -->
+                    <header class="mb4">
+                        <h1 class="fw-bolder mb-1" th:text="${article.title}"></h1>
+                        <div class="text-muted fst-italic mb-2" th:text="|Posted on ${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}|"></div>
+                    </header>
+                    <section class="mb-5">
+                        <p class="fs-5 mb-4" th:text="${article.content}"></p>
+                    </section>
+                    <button type="button" class="btn btn-primary btn-sm">수정</button>
+                    <button type="button" id="delete-btn" class="btn btn-secondary btn-sm">삭제</button>
+                    <!-- id="delete-btn"은 article.js에 삭제 추가 한 뒤에 작성할 것 -->
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/article.js"></script>  <!-- article.js 파일 추가 후에 할 것
+                         실행 테스트 하기
+                        01 단계 - 스프링 부트 서버를 다시 실행하고 http://localhost:8080/articles/1에 접속한 다음
+                            상세 글에서 [삭제]버튼을 클릭해 삭제가 잘 되는지 확인해봅시다.
+                            팝업창이 나타난 다음, [확인]을 누르면 삭제가 완료되고, 글 목록 화면으로 이동했을 때,
+                            '제목 1' 글이 사라져 있어야 합니다.
+
+        5. 수정/생성 기능 추가하기
+            삭제 기능이 완성됐습니다. 이제는 글 수정/생성 기능을 추가하겠습니다. 수정과 생성을 함께 개발하는 이유가 있습니다.
+
+     -->
+</body>
+</html>
+<!-- 템플릿 함수 중 ${#temporals.format()}은 날짜 형식을 yyyy-MM-DD HH:mm으로 포매팅합니다.
+    포매팅한 날짜 형식을 | | 기호와 함께 Posted on이라는 텍스트와 붙인 점을 확인하세요. 그러면 블로그 결과물에
+    2099-99-3123:11 Posted on같이 글을 게시한 시간 알림을 표시할 수 있습니다
+
+02 단계 - 글 상세 화면은 글 리스트 화면에서 보러 갈 수 있어야 하겠쬬? 글 리스트 화면에 있는 [보러 가기]버튼을 수정합니다.
+다른 코드는 그대로 두고 [보러 가기] 버튼 쪽을 수정해주세요.
+-->
