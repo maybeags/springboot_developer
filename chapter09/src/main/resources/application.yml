@@ -5,9 +5,12 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
-  datasource: # 1. 데이터베이스 정보 추가
+  datasource:
     url: jdbc:h2:mem:testdb
     username: sa
-  h2:         # 2. H2 콘솔 활성화
+  h2:
     console:
       enabled: true
+jwt:
+  issuer: maybeags@gmail.com
+  secret_key: study-springboot
