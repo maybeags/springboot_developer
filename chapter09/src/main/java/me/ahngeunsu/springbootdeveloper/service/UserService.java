@@ -30,4 +30,17 @@ public class UserService {
 
                 01 단계 - controller 디렉토리에 UserApiController.java 파일을 만들어 다음 코드를 입력
      */
+
+    // 토큰 API 구현하기 - 토큰 서비스 추가하기에 해당
+    // 메서드 추가
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+    }
+    /*
+        02 단계 - service 디렉토리에 RefreshTokenService.java 파일을 생성합니다.
+            전달 받은 리프레시 토큰으로 리프레시 토큰 객체를 검색해서 전달하는 findByRefreshToken() 메서드를 구현
+
+            RefreshTokenService.java 파일을 생성하세요.
+     */
 }
