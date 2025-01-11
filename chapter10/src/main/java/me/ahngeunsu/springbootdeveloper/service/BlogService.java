@@ -19,10 +19,9 @@ public class BlogService {
     private final BlogRepository blogRepository;
 
     // 블로그 글 추가 메서드
-    public Article save(AddArticleRequest request) {
-        return blogRepository.save(request.toEntity());
-    }
-
+//    public Article save(AddArticleRequest request) {
+//        return blogRepository.save(request.toEntity());
+//    }
     /*
         @Service 애너테이션은 해당 클래스를 빈으로 서블릿 컨테이너에 등록해줍니다.
         save() 메서드는 JpaRepository에서 지원하는 저장 메서드 save()로,
@@ -38,6 +37,17 @@ public class BlogService {
 
             01 단계 - springbootdelveloper 패키지에 controller 패키지를 생성한 뒤, BlogApiController.java 파일 생성합니다.
 
+     */
+
+    /*
+        service 패키지 수정하는데 save 수정본입니다. 위에건 기존거
+     */
+    public Article save(AddArticleRequest request, String userName) {
+        return blogRepository.save(request.toEntity(userName));
+    }
+    /*
+        save 수정후에 controller 패키지의 BlogApiController.java 파일을 열어 현재 인증 정보를 가져오는
+        principal 객체를 파라미터로 추가합니다. 인증 객체에서 유저 정보를 가져온 뒤 save() 메서드로 넘겨줍니다.
      */
     public List<Article> findAll() {
         return blogRepository.findAll();

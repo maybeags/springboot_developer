@@ -18,7 +18,9 @@
                     <input type="hidden" id="article-id" th:value="${article.id}">
                     <header class="mb4">
                         <h1 class="fw-bolder mb-1" th:text="${article.title}"></h1>
-                        <div class="text-muted fst-italic mb-2" th:text="|Posted on ${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}|"></div>
+                        <!-- author 추가 후에 작성하는 코드 // 밑에 코드 작성 후에 OAuth 뷰 구성으로 넘어가야 해서 controller->UserViewController로 이동하여 login() 메서드 뷰 수정-->
+                        <div class="text-muted fst-italic mb-2" th:text="|Posted on ${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}| By ${article.author}|"></div>
+                        <!-- 기존 코드 <div class="text-muted fst-italic mb-2" th:text="|Posted on ${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}|"></div> -->
                     </header>
                     <section class="mb-5">
                         <p class="fs-5 mb-4" th:text="${article.content}"></p>

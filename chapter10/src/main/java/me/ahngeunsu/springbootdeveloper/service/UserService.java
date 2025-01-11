@@ -37,6 +37,11 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+    }
     /*
         02 단계 - service 디렉토리에 RefreshTokenService.java 파일을 생성합니다.
             전달 받은 리프레시 토큰으로 리프레시 토큰 객체를 검색해서 전달하는 findByRefreshToken() 메서드를 구현

@@ -29,10 +29,17 @@ public class User implements UserDetails { // UserDetails를 상속 받아 인�
     @Column(name = "password")
     private String password;
 
+    //OAuth2 서비스 구현 중에 하는겁니다
+    @Column(name = "nickname", unique = true)
+    private String nickname;
+
+    // 위에거 하고 나면 this.password = password;에서 다음과 같이 수정합니다.
     @Builder
-    public User(String email, String password, String auth) {
+    public User(String email, String password, String auth, String nickname) {
         this.email = email;
         this.password = password;
+        //OAuth2하고 나서 매개변수에 String nickname 추가하고 해야합니다.
+        this.nickname = nickname;
     }
 
     @Override   // 권한 반환
@@ -78,8 +85,8 @@ public class User implements UserDetails { // UserDetails를 상속 받아 인�
         // 계정이 사용 가능한지 확인하는 로직
         return true; // true -> 사용 가능
     }
-}
-/*
+
+    /*
     User 클래스가 상속한 UserDetails 클래스는 스프링 시큐리티에서 사용자의 인증 정보를 담아두는
     인터페이스. 스프링 시큐리티에서 해당 객체를 통해 인증 정보를 가져오려면 필수 오버라이드 메서드들을
     여러개 사용해야 하기 때문에 입력해야 할 코드가 많음
@@ -90,3 +97,17 @@ public class User implements UserDetails { // UserDetails를 상속 받아 인�
         01 단계 - User 엔티티에 대한 리포지토리를 만들겠습니다.
             repository 디렉토리에 UserRepository.java 파일을 생성하고 인터페이스를 만들어줍니다.
  */
+
+    // 사용자 이름 변경 메서드 OAuth2하고나서 하는 겁니다.
+    public User update(String nickname) {
+        this.nickname = nickname;
+
+        return this;
+    }
+    /*
+        config 패키지에 oauth 패키지를 만들고, OAuth2UserCustomService.java 파일을 생성
+            -> 리소스 서버에서 보내주는 사용자 정보를 불러오는 메서드인 loadUser()를 통해 사용자를 조회하고
+            -> users 테이블에 사용자 정보가 있다면 이름을 업데이트하고 없다면
+            -> saveOrUpdate() 메서드를 실행해 users 테이블에 회원 데이터를 추가하는 로직 작성 예정
+     */
+}

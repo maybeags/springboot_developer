@@ -37,11 +37,22 @@ public class Article {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "author", nullable = false)
+    private String author;
+
+    // 위에 필드 추가하고, 밑에 생성자 수정하세요.
     @Builder
-    public Article(String title, String content) {
+    public Article(String author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
+    /*
+        위에거 수정한 뒤에
+
+        02 단계 - 기존 글을 작성하는 API에서 작성자를 추가해 저장하기 위해 DTO 패키지의 AddArticleRequest 파일을 열고,
+            toEntity() 메서드를 수정하세요.
+     */
 
     public void update(String title, String content) {
         this.title = title;

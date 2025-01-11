@@ -6,10 +6,12 @@ import me.ahngeunsu.springbootdeveloper.dto.AddArticleRequest;
 import me.ahngeunsu.springbootdeveloper.dto.ArticleResponse;
 import me.ahngeunsu.springbootdeveloper.dto.UpdateArticleRequest;
 import me.ahngeunsu.springbootdeveloper.service.BlogService;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -18,14 +20,28 @@ public class BlogApiController {
 
     private final BlogService blogService;
 
-    @PostMapping("/api/articles")
-    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request) {
-        Article savedArticle = blogService.save(request);
+//    @PostMapping("/api/articles")
+//    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request) {
+//        Article savedArticle = blogService.save(request);
+//
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(savedArticle);
+//    }
 
+    /*
+        위에거는 author 추가 전입니다.
+     */
+    @PostMapping("/api/articles")
+    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request, Principal principal){
+        Article savedArticle = blogService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedArticle);
     }
+    /*
+        05 단계 - dto 패키지의 ArticleViewResponse 파일 수정해야 합니다. author 필드를 추가합니다.
+     */
 
     @GetMapping("/api/articles")
     public ResponseEntity<List<ArticleResponse>> findAllArticles() {
